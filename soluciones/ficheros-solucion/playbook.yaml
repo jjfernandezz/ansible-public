@@ -1,0 +1,10 @@
+---
+- name: Ejecutar todo
+  hosts: all
+  become: true
+  
+  tasks:
+    - name: Lanzar el rol de nginx 
+      import_role:
+        name: nginx
+

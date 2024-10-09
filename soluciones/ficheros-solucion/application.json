@@ -1,0 +1,9 @@
+{
+    "applications": [
+        {
+        "name": "App1",
+        "version": "1.0.0",
+        "description": "Aplicacion de prueba 1"
+        }
+    ] 
+}

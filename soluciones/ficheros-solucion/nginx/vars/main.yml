@@ -1,0 +1,4 @@
+---
+# vars file for nginx
+vars_file:
+  - fichero: /home/user/ejercicioOpcional/application.json

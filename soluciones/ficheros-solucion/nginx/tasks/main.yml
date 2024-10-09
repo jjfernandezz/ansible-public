@@ -1,0 +1,56 @@
+---
+- name: Actualizar apt
+  apt:
+    update_cache: yes
+  tags:
+    - install
+
+- name: Instalar nginx
+  apt:
+    name: nginx
+    state: present
+  tags:
+    - install
+
+- name: leer datos de json
+  set_fact:
+    app_info: "{{lookup('file', fichero) | from_json}}"
+  tags:
+    - config
+
+- name: obtener datos de la aplicacion
+  set_fact:
+    app_name: "{{ app_info.applications[0].name }}"
+    app_version: "{{ app_info.applications[0].version }}"
+    app_description: "{{ app_info.applications[0].description }}"
+  tags:
+    - config
+
+- name: Cargar secreto de Vault para entorno de Producción
+  include_vars: secreto.yaml
+  when: entorno == "Produccion"
+  tags:
+    - config
+
+- name: Crear index.html simple
+  copy:
+    content: "<html><body><h1>Estas en el entorno de {{ entorno }}!</h1><p><strong>Nombre de la Aplicacion:</strong> {{ app_name }}</p><p><strong>Version:</strong> {{ app_version }}</p><p><strong>Descripcion:</strong> {{ app_description }}</p></body></html>"
+    dest: /var/www/html/index.html
+  when: entorno == "Desarrollo"
+  tags:
+    - config
+
+- name: Crear index.html simple
+  copy:
+    content: "<html><body><h1>Estas en el entorno de {{ entorno }}!</h1><h2>{{ secreto1 }}</h2><p><strong>Nombre de la Aplicacion:</strong> {{ app_name }}</p><p><strong>Version:</strong> {{ app_version }}</p><p><strong>Descripcion:</strong> {{ app_description }}</p></body></html>"
+    dest: /var/www/html/index.html
+  when: entorno == "Produccion"
+  tags:
+    - config
+
+- name: Reiniciar nginx
+  service: 
+    name: nginx
+    state: restarted
+  tags: 
+    - Restart
